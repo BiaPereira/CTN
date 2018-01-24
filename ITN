@@ -7,4 +7,4 @@ file = open(filename)
 print('\n')
 fileR = file.read()
 print(fileR)
-ff
+print ('\n')
