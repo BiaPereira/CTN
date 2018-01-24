@@ -7,4 +7,14 @@ file = open(filename)
 print('\n')
 fileR = file.read()
 print(fileR)
-print
+
+#str to array
+
+
+
+#data = list(fileR)
+#print (data)
+#shape=data.shape
+#print (shape)
+#Max = np.max(fileR)
+#print (Max)
