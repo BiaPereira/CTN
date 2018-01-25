@@ -1,6 +1,10 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import itertools
+import matplotlib.cbook as cbook
+import matplotlib.dates as mdates
+from PIL import Image, ImageDraw
 import ezodf
 
 #Opens file
@@ -12,15 +16,11 @@ fileR = file.read()
 print (type(fileR))
 
 
-
 g = fileR.split(' ',-1)
 print(g)
-#f = fileR.split('\n', -1)
-#print (f)
 leng = len(g)
 print (leng)
-#print (shape)
-#print(g)
+
 i=0
 x = []
 y = []
@@ -29,17 +29,17 @@ for i in range(0,leng-1,4):
     print ('Novos valores')
     print(g[i + 1])
     print(g[i+3])
-    x.append(g[i + 1])
-    y.append(g[i+3])
-print (x)
-maxx = max(x)
-print (len(x))
+    x.append(float(g[i + 1]))
+    y.append(float(g[i+3]))
+
+print(x)
+print('Maximo de x', max(x))
+
+print('Maximo de y', max(y))
 print (y)
-maxy = max(y)
-print (len(y))
-print (type(x))
 
 plt.plot(x,y)
-#plt.axis([0, 160, 0, 0.03])
+plt.grid()
 plt.show()
+print ('fim')
 
