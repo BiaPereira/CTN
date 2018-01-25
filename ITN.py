@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 from scipy.optimize import curve_fit
 import itertools
 import matplotlib.cbook as cbook
@@ -60,9 +61,6 @@ def zoom_gráfico (minimo, maximo):
     new_y = []
     new_x = x[lmin:lmax + 1]
     new_y = y[lmin:lmax + 1]
-    Vmax = max(new_y)
-    print('O valor máximo é :', Vmax)
-
 
     plt.plot(new_x, new_y)
     plt.yscale('log', nonposy='clip')
@@ -79,3 +77,42 @@ while resp == 'Não':
     lim_max = int(input('Upper limit: '))
     zoom_gráfico(lim_min,lim_max)
     resp = input('Gráfico Correto? Sim/Não: ')
+
+#print ('entre que valores está o pico máximo1?')
+    #min1 = int(input('Lower limit: '))
+    #max1 = int(input('Upper limit: '))
+min1 = 2620
+max1 = 2750
+xx = x[min1:max1 + 1]
+yy = y[min1:max1 + 1]
+print (xx)
+print (yy)
+maxy = max(yy)
+print (maxy)
+FWHMy = maxy/2
+print (FWHMy)
+index = yy.index(maxy) + min1
+index2 = yy.index(FWHMy) + min1
+FWHMx = (abs(index-index2)*2)
+print (FWHMx)
+print (index)
+print (index2)
+j=abs(index-index2)
+print (j)
+area = 0
+for j in range(abs(index-index2),FWHMx,1):
+    area = area + y[j+min1]
+    print ('area:', area)
+xx=np.array(xx)
+
+def gaussiana (A, y0,index_x, FWHM, x):
+    gauss = y0 + (A/((FWHM/(np.log(4))**(1/2))))*np.exp(-2*((x-index_x)**2)/((FWHM/(np.log(4))**(1/2))**2))
+    return gauss
+print (gaussiana(area, 0,index, FWHMx, xx))
+k =gaussiana(area, 80,index, FWHMx, xx)
+print (type (k))
+print (type (xx))
+print (xx)
+plt.plot(xx,k, xx,yy)
+plt.show()
+
