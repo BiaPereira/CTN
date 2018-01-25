@@ -114,5 +114,6 @@ print (type (k))
 print (type (xx))
 print (xx)
 plt.plot(xx,k, xx,yy)
+
 plt.show()
 
