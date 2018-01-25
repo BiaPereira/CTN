@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
 import itertools
 import matplotlib.cbook as cbook
 import matplotlib.dates as mdates
@@ -49,22 +50,32 @@ plt.xlabel('Canal')
 plt.yscale('log', nonposy='clip')
 plt.show()
 
-#lim_min=int(input('Lower limit: '))
-#lim_max=int(input('Upper limit: ' ))
-lim_min = 2000
-lim_max = 3000
+lim_min=int(input('Lower limit: '))
+lim_max=int(input('Upper limit: ' ))
 
-lmin = x.index(lim_min)
-lmax = x.index(lim_max)
-new_x = []
-new_y = []
-new_x = x[lmin:lmax+1]
-new_y = y[lmin:lmax+1]
+def zoom_gráfico (minimo, maximo):
+    lmin = x.index(minimo)
+    lmax = x.index(maximo)
+    new_x = []
+    new_y = []
+    new_x = x[lmin:lmax + 1]
+    new_y = y[lmin:lmax + 1]
+    Vmax = max(new_y)
+    print('O valor máximo é :', Vmax)
 
 
-plt.plot(new_x,new_y)
-plt.yscale('log', nonposy='clip')
-plt.ylabel('Intensidade')
-plt.xlabel('Canal')
+    plt.plot(new_x, new_y)
+    plt.yscale('log', nonposy='clip')
+    plt.ylabel('Intensidade')
+    plt.xlabel('Canal')
+    plt.show()
 
-plt.show()
+
+
+zoom_gráfico(lim_min,lim_max)
+resp = input('Gráfico Correto? Sim/Não: ')
+while resp == 'Não':
+    lim_min = int(input('Lower limit: '))
+    lim_max = int(input('Upper limit: '))
+    zoom_gráfico(lim_min,lim_max)
+    resp = input('Gráfico Correto? Sim/Não: ')
