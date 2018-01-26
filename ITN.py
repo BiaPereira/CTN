@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 from scipy.optimize import curve_fit
+from scipy.optimize import leastsq
 import itertools
 import matplotlib.cbook as cbook
 import matplotlib.dates as mdates
@@ -86,34 +87,49 @@ max1 = 2750
 xx = x[min1:max1 + 1]
 yy = y[min1:max1 + 1]
 print (xx)
-print (yy)
+print ('veotr yy',yy)
 maxy = max(yy)
-print (maxy)
+print ('maxy',maxy)
 FWHMy = maxy/2
-print (FWHMy)
-index = yy.index(maxy) + min1
-index2 = yy.index(FWHMy) + min1
-FWHMx = (abs(index-index2)*2)
-print (FWHMx)
-print (index)
-print (index2)
-j=abs(index-index2)
-print (j)
+print ('FWHMy',FWHMy)
+print ('yy.index(maxy)',yy.index(maxy))
+print ('yy.index(FWHMy)', yy.index(FWHMy))
+
+index_max_y = yy.index(maxy) + min1
+index_FWHM_y = yy.index(FWHMy) + min1
+
+FWHMx = (abs(index_max_y-index_FWHM_y)*2)
+FWHM2 = (abs(index_max_y-index_FWHM_y))
+
+print ('FWHMX' ,FWHMx)
+print ('index_max_y',index_max_y)
+print ('index_FWHM_y',index_FWHM_y)
+
+inicio = index_max_y - min1 - FWHM2
+print(type(inicio))
+fim = inicio + FWHMx
+print(type(fim))
 area = 0
-for j in range(abs(index-index2),FWHMx,1):
-    area = area + y[j+min1]
+j = inicio
+print (inicio)
+print (fim)
+for j in range(inicio, fim,1):
+    print (j)
+    area = (area + yy[j])
     print ('area:', area)
-xx=np.array(xx)
+
+xx=np.array(xx, dtype=float)
 
 def gaussiana (A, y0,index_x, FWHM, x):
     gauss = y0 + (A/((FWHM/(np.log(4))**(1/2))))*np.exp(-2*((x-index_x)**2)/((FWHM/(np.log(4))**(1/2))**2))
     return gauss
-print (gaussiana(area, 0,index, FWHMx, xx))
-k =gaussiana(area, 80,index, FWHMx, xx)
+print (gaussiana(area, 10,yy.index(maxy), FWHMx, xx))
+k = gaussiana(area, 10,index_max_y, FWHMx, xx)
 print (type (k))
 print (type (xx))
 print (xx)
 plt.plot(xx,k, xx,yy)
 
 plt.show()
+plt.savefig
 
