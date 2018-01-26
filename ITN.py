@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 import math
 from scipy.optimize import curve_fit
 from scipy.optimize import leastsq
@@ -83,7 +84,7 @@ while resp == 'Não':
     #min1 = int(input('Lower limit: '))
     #max1 = int(input('Upper limit: '))
 min1 = 2620
-max1 = 2750
+max1 = 2720
 xx = x[min1:max1 + 1]
 yy = y[min1:max1 + 1]
 print (xx)
@@ -128,8 +129,13 @@ k = gaussiana(area, 10,index_max_y, FWHMx, xx)
 print (type (k))
 print (type (xx))
 print (xx)
-plt.plot(xx,k, xx,yy)
 
 plt.show()
-plt.savefig
+plt.plot(xx,k, xx,yy)
+pp = PdfPages('image.pdf')
+plt.savefig(pp, format='pdf')
+pp.savefig()
+
+
+
 
