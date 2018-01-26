@@ -1,8 +1,0 @@
-median = np.median(xx)
-upper_quartile = np.percentile(xx, 75)
-lower_quartile = np.percentile(xx, 25)
-IQR = upper_quartile - lower_quartile
-plt.errorbar(median, yy, xerr=[lower_quartile ,upper_quartile], fmt='k--')
-
-plt.savefig('IQR.eps')
-plt.show()
