@@ -107,7 +107,6 @@ grafico(x,y)
 
 #---------------------New plot
 
-
 # input limit plot
 lim_min=int(input('Lower limit: '))
 lim_max=int(input('Upper limit: ' ))
