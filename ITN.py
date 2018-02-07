@@ -5,20 +5,8 @@ from bisect import bisect
 from lmfit.models import GaussianModel, ConstantModel
 from scipy.odr import *
 from lmfit import Model
-from lmfit import Parameters, Minimizer, conf_interval, conf_interval2d, minimize, printfuncs
-import scipy.optimize as optimize
-import scipy.optimize as opt
-from matplotlib.backends.backend_pdf import PdfPages
-import math
-from scipy.optimize import curve_fit
-from scipy.optimize import leastsq
-import itertools
-import matplotlib.cbook as cbook
-import matplotlib.dates as mdates
-from PIL import Image, ImageDraw
-import ezodf
-from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 
+greek_alphabet = {u'\u03A7'}
 
 #Opens file
 filename = input('Name of the file: ')
@@ -32,7 +20,6 @@ if filename[tam-3:tam] == 'odf':
     os.rename(filename, base + ".txt")
     file = open (filename[0:tam-3]+'txt')
 fileR = file.read()
-
 
 def grafico (x,y):
     # legend
@@ -62,7 +49,7 @@ def zoom_gráfico (minimo, maximo):
     print(new_y)
     grafico(new_x, new_y)
 
-#Gauss
+#Gauss + line + bimodal
 
 def gaussian (x, A,index_x, FWHM):
     gauss = (A/((FWHM/(np.log(4))**(1/2))))*np.exp(-2*((x-index_x)**2)/((FWHM/(np.log(4))**(1/2))**2))
@@ -73,10 +60,6 @@ def line (x, m, b):
 
 def bimodal(x,A1,index1,FWHM1,A2,index2,FWHM2):
     return gaussian(x,A1,index1,FWHM1)+gaussian(x,A2,index2,FWHM2)
-
-def gaussiana (x, A, y0,index_x, FWHM):
-    gauss = y0 + (A/((FWHM/(np.log(4))**(1/2))))*np.exp(-2*((x-index_x)**2)/((FWHM/(np.log(4))**(1/2))**2))
-    return gauss
 
 #split
 g = fileR.split(' ',-1)
@@ -122,14 +105,16 @@ while resp == 'Não':
     resp = input('Gráfico Correto? Sim/Não: ')
 
 print ('Entre que valores está o pico2 máximo?')
-min_xx = int(input('Lower limit: '))
-max_xx = int(input('Upper limit: '))
+#min_xx = int(input('Lower limit: '))
+#max_xx = int(input('Upper limit: '))
 print ('segundo pico')
-min_xx2 = int(input('Lower limit: '))
-max_xx2 = int(input('Upper limit: '))
+#min_xx2 = int(input('Lower limit: '))
+#max_xx2 = int(input('Upper limit: '))
 y0 = int(input('y0:'))
-#min_xx = lim_min
-#max_xx = lim_max
+min_xx = 2530
+max_xx = 2640
+min_xx2 = 2630
+max_xx2 = 2740
 
 if min_xx<min_xx2:
     print('1')
@@ -152,7 +137,7 @@ grafico(xtotal,ytotal)
 #Obter os valores
 max_yy = max(yy)#max_counts
 FWHMyy = max_yy/2 #number of FWHM yy
-print ('FWHMyy',FWHMyy)
+#print ('FWHMyy',FWHMyy)
 
 #In case that FWHM does not appear in yy
 if FWHMyy in yy:
@@ -160,11 +145,11 @@ if FWHMyy in yy:
 
 else:
     y2 = sorted(yy) #order
-    print (y2)
+    #print (y2)
     index_FWHM_y2 = bisect(y2,FWHMyy)
-    print ('index_FWHM_y2',index_FWHM_y2)
+    #print ('index_FWHM_y2',index_FWHM_y2)
     number = y2[index_FWHM_y2]
-    print (number)
+    #print (number)
     index_FWHM_y = yy.index(number) + min_xx
 
 max_yy2 = max(yy2)#max_counts
@@ -175,22 +160,22 @@ if FWHMyy2 in yy2:
 
 else:
     y2 = sorted(yy2) #order
-    print (y2)
+    #print (y2)
     index_FWHM_y2 = bisect(y2,FWHMyy2)
-    print ('index_FWHM_y2',index_FWHM_y2)
+    #print ('index_FWHM_y2',index_FWHM_y2)
     number = y2[index_FWHM_y2]
-    print (number)
+    #print (number)
     index_FWHM_y2 = yy2.index(number) + min_xx2
 
 
 
-print ('yy.index(maxy)',yy.index(max_yy))
-print ('yy.index(FWHMy)', index_FWHM_y)
+#print ('yy.index(maxy)',yy.index(max_yy))
+#print ('yy.index(FWHMy)', index_FWHM_y)
 index_max_y = yy.index(max_yy) + min_xx
 index_max_y2 = yy2.index(max_yy2) + min_xx2
 
 FWHM_xx = (abs(index_max_y-index_FWHM_y)*2)
-print ('FWHM', FWHM_xx)
+#print ('FWHM', FWHM_xx)
 FWHM2 = (abs(index_max_y-index_FWHM_y))
 
 FWHM_xx2 = (abs(index_max_y2-index_FWHM_y2)*2)
@@ -199,9 +184,9 @@ FWHM22 = (abs(index_max_y2-index_FWHM_y2))
 #Area
 inicio = index_max_y - min_xx - FWHM2
 fim = inicio + FWHM2
-print(yy)
-print (inicio)
-print (fim)
+#print(yy)
+# print (inicio)
+#print (fim)
 area = 0
 j = inicio
 for j in range(inicio, fim,1):
@@ -222,19 +207,9 @@ xx2=np.array(xx2, dtype=float)
 yy2=np.array(yy2, dtype=float)
 xtotal=np.array(xtotal, dtype=float)
 ytotal=np.array(ytotal, dtype=float)
-print (ytotal)
 
-print('area1', area)
-print('i', index_max_y)
-print('F', FWHMyy)
-print('area2', area2)
-print('in', index_max_y2)
-print('F2', FWHMyy2)
-
-FWHMyy = 15
 mod = Model(bimodal) + Model(line)
 #plt.plot(bimodal(x=xtotal, A1= area, index1=index_max_y, FWHM1=FWHMyy,A2 = area2, index2= index_max_y2, FWHM2= FWHMyy2))
-#plt.show()
 pars = mod.make_params(A1= area, index1=index_max_y, FWHM1=FWHMyy,A2 = area2, index2= index_max_y2, FWHM2= FWHMyy2, m=0, b=10)
 pars['FWHM1'].min > 0.001         # sigma  > 0
 pars['FWHM2'].min > 0.001     # amplitude > 0
@@ -243,23 +218,60 @@ pars['FWHM2'].min > 0.001     # amplitude > 0
 resul = mod.fit(ytotal, pars, x=xtotal, weights=1/np.sqrt(ytotal))
 
 print(resul.fit_report())
+t=resul.fit_report().split('\n',-1)
+print (t)
+l = t[7]
+tamanho = len(l)
+valorchi = l[24:tamanho]
 
-plt.plot(xtotal, ytotal,         'b+')
-#plt.plot(xx, resul.init_fit, 'k--')
-plt.plot(xtotal, resul.best_fit, 'r-', color = "green")
+for w in range (11, 17, 1):
+    valor =[]
+    incer = []
+    val= t[w]
+    slp=val.split(' ', -1)
+    num = (map(lambda x: float(x), t[11]))
+    valor = valor + num
+    incer = incer + float(val [13])
+    print ('dd', valor)
+    print(incer)
+    #num = float (val)
+    #new = np.append(num)
+    #print (new)
+
+apro =np.around(num, decimals=1)
+print(type(valorchi))
+print('aa', apro)
+
+
+plt.plot(xtotal, ytotal,         'b+', label="Experimental")
+plt.plot(xtotal, resul.init_fit, 'k--', color = 'grey' ,label="Initial Fit")
+plt.plot(xtotal, resul.best_fit, 'r-', color = "green",label="Best Fit")
 plt.yscale('log', nonposy='clip')
+plt.ylabel('Intensidade')
+plt.xlabel('Canal')
+plt.figtext(.165, 0.806, r'$\chi$')
+plt.figtext(.18, 0.8, '='+valorchi)
+plt.legend(bbox_to_anchor=(0.8, 1), loc=2, borderaxespad=0.)
 plt.show()
 
+# File
+newfile = input('file name:')
 
+if os.path.exists(newfile):
+    y = open(newfile, 'a')
+    y.write('\n')
+    y.write("\n".join(map(lambda x: str(x), t[11:17])))
+    y.close()
+else:
+    f = open(newfile, 'w')
+    f.write("\n".join(map(lambda x: str(x), t[11:17])))
+    f.close()
 
-# New plot
+#print ('\n')
+#print ('New Plot')
 
-
-print ('\n')
-print ('New Plot')
-
-PS= FWHMyy/2*(np.log(4))**(1/2)
-print('area', area)
+#PS= FWHMyy/2*(np.log(4))**(1/2)
+#print('area', area)
 
 #model = GaussianModel(prefix='peak_') + ConstantModel()
 #params = model.make_params(c=y0, peak_center=index_max_y, peak_sigma=PS, peak_amplitude= area)
