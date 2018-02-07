@@ -93,8 +93,7 @@ grafico(x,y)
 # input limit plot
 lim_min=int(input('Lower limit: '))
 lim_max=int(input('Upper limit: ' ))
-#lim_min = 2600
-#lim_max = 2740
+
 
 zoom_gráfico(lim_min,lim_max)
 resp = input('Gráfico Correto? Sim/Não: ')
@@ -105,16 +104,16 @@ while resp == 'Não':
     resp = input('Gráfico Correto? Sim/Não: ')
 
 print ('Entre que valores está o pico2 máximo?')
-#min_xx = int(input('Lower limit: '))
-#max_xx = int(input('Upper limit: '))
+min_xx = int(input('Lower limit: '))
+max_xx = int(input('Upper limit: '))
 print ('segundo pico')
-#min_xx2 = int(input('Lower limit: '))
-#max_xx2 = int(input('Upper limit: '))
+min_xx2 = int(input('Lower limit: '))
+max_xx2 = int(input('Upper limit: '))
 y0 = int(input('y0:'))
-min_xx = 2530
-max_xx = 2640
-min_xx2 = 2630
-max_xx2 = 2740
+#min_xx = 2530
+#max_xx = 2640
+#min_xx2 = 2630
+#max_xx2 = 2740
 
 if min_xx<min_xx2:
     print('1')

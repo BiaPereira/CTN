@@ -42,6 +42,9 @@ for w in range (11,len,82):
     area2.append(float((spl[w+41])))
     c2.append(float((spl[w +53])))
     fwhm2.append(float(spl[w + 66]))
+
+
+
 plt.plot(energia,area1, 'b+')
 plt.show()
 
