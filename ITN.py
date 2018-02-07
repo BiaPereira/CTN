@@ -224,23 +224,24 @@ l = t[7]
 tamanho = len(l)
 valorchi = l[24:tamanho]
 
-for w in range (11, 17, 1):
-    valor =[]
-    incer = []
-    val= t[w]
-    slp=val.split(' ', -1)
-    num = (map(lambda x: float(x), t[11]))
-    valor = valor + num
-    incer = incer + float(val [13])
-    print ('dd', valor)
-    print(incer)
-    #num = float (val)
+#for w in range (11, 17, 1):
+ #   valor =[]
+  #  incer = []
+   # val= t[w]
+    #slp=val.split(' ', -1)
+    #print (slp)
+    #num = (map(lambda x: float(x), t[11]))
+    #valor = valor + num
+# incer = incer + float(val [13])
+#     print ('dd', valor)
+#   print(incer)
+#   #num = float (val)
     #new = np.append(num)
     #print (new)
 
-apro =np.around(num, decimals=1)
-print(type(valorchi))
-print('aa', apro)
+#apro =np.around(num, decimals=1)
+#print(type(valorchi))
+#print('aa', apro)
 
 
 plt.plot(xtotal, ytotal,         'b+', label="Experimental")
