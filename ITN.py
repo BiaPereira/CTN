@@ -5,6 +5,7 @@ from bisect import bisect
 from lmfit.models import GaussianModel, ConstantModel
 from scipy.odr import *
 from lmfit import Model
+import openpyxl
 
 greek_alphabet = {u'\u03A7'}
 
@@ -69,6 +70,7 @@ leng = len(g)
 i=0
 x = []
 y = []
+print(type(g))
 for i in range(0,leng-1,4):
 
     x.append(float(g[i + 1]))
@@ -104,16 +106,16 @@ while resp == 'Não':
     resp = input('Gráfico Correto? Sim/Não: ')
 
 print ('Entre que valores está o pico2 máximo?')
-min_xx = int(input('Lower limit: '))
-max_xx = int(input('Upper limit: '))
+#min_xx = int(input('Lower limit: '))
+#max_xx = int(input('Upper limit: '))
 print ('segundo pico')
-min_xx2 = int(input('Lower limit: '))
-max_xx2 = int(input('Upper limit: '))
-y0 = int(input('y0:'))
-#min_xx = 2530
-#max_xx = 2640
-#min_xx2 = 2630
-#max_xx2 = 2740
+#min_xx2 = int(input('Lower limit: '))
+#max_xx2 = int(input('Upper limit: '))
+#y0 = int(input('y0:'))
+min_xx = 2530
+max_xx = 2640
+min_xx2 = 2630
+max_xx2 = 2740
 
 if min_xx<min_xx2:
     print('1')
@@ -128,7 +130,7 @@ if min_xx>min_xx2:
 xx = x[min_xx:max_xx + 1]
 yy = y[min_xx :max_xx + 1]
 
-xx2 =x[min_xx2:max_xx2 + 1]
+xx2 = x[min_xx2:max_xx2 + 1]
 yy2 = y[min_xx2:max_xx2 + 1]
 
 grafico(xtotal,ytotal)
@@ -267,6 +269,9 @@ else:
     f.write("\n".join(map(lambda x: str(x), t[11:17])))
     f.close()
 
+
+
+
 #print ('\n')
 #print ('New Plot')
 
@@ -281,3 +286,74 @@ else:
 #plt.plot(xx, yy, 'b+', color = 'blue')
 #plt.plot(xx, result.best_fit, color = 'orange')
 #plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-----------------------------------------------------------Relação das Areas
+
+#Opens file
+import pandas as pd
+
+book = openpyxl.load_workbook('LiCl_Logbook.xlsx')
+
+sheet = book.active
+
+
+if filename[0:2] =='F2':
+    for i in range(1,100,1):
+        a = sheet.cell(row=i, column=25)
+        if a.value==filename[2:tam-4]:
+            print (a)
+
+
+mod = Model(bimodal) + Model(line)
+
+pars = mod.make_params(A1= area, index1=index_max_y, FWHM1=FWHMyy,A2 = area2, index2= index_max_y2, FWHM2= FWHMyy2, m=0, b=10)
+#pars['area'].vary = False
+pars['FWHM1'].min > 0.001         # sigma  > 0
+pars['FWHM2'].min > 0.001     # amplitude > 0
+
+
+resul = mod.fit(ytotal, pars, x=xtotal, weights=1/np.sqrt(ytotal))
+
+print(resul.fit_report())
+t=resul.fit_report().split('\n',-1)
+print (t)
+l = t[7]
+tamanho = len(l)
+valorchi = l[24:tamanho]
+
+
+plt.plot(xtotal, ytotal,         'b+', label="Experimental")
+plt.plot(xtotal, resul.init_fit, 'k--', color = 'grey' ,label="Initial Fit")
+plt.plot(xtotal, resul.best_fit, 'r-', color = "green",label="Best Fit")
+plt.yscale('log', nonposy='clip')
+plt.ylabel('Intensidade')
+plt.xlabel('Canal')
+plt.figtext(.165, 0.806, r'$\chi$')
+plt.figtext(.18, 0.8, '='+valorchi)
+plt.legend(bbox_to_anchor=(0.8, 1), loc=2, borderaxespad=0.)
+plt.show()
+
+# File
+newfile = input('file name:')
+
+if os.path.exists(newfile):
+    y = open(newfile, 'a')
+    y.write('\n')
+    y.write("\n".join(map(lambda x: str(x), t[11:17])))
+    y.close()
+else:
+    f = open(newfile, 'w')
+    f.write("\n".join(map(lambda x: str(x), t[11:17])))
+    f.close()
