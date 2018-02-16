@@ -6,6 +6,7 @@ from lmfit.models import GaussianModel, ConstantModel
 from scipy.odr import *
 from lmfit import Model
 import openpyxl
+from math import sin, acos, cos
 
 greek_alphabet = {u'\u03A7'}
 
@@ -51,6 +52,14 @@ def zoom_gráfico (minimo, maximo):
     grafico(new_x, new_y)
 
 #Gauss + line + bimodal
+def k (M2,teta):
+    M1 = 1.007825
+    kli = ((((M2**2-M1**2*(sin(teta))**2)**(1/2)+(M1*cos(teta)))/(M1+M2))**2)
+    return kli
+
+def w6 (m6, m7, teta, w7):
+    fwhm2 = ((k(m6,teta)+cos(teta))/(k(m7,teta)+cos(teta)))*w7
+    return fwhm2
 
 def gaussian (x, A,index_x, FWHM):
     gauss = (A/((FWHM/(np.log(4))**(1/2))))*np.exp(-2*((x-index_x)**2)/((FWHM/(np.log(4))**(1/2))**2))
@@ -59,8 +68,8 @@ def gaussian (x, A,index_x, FWHM):
 def line (x, m, b):
     return m*x+b
 
-def bimodal(x,A1,index1,FWHM1,A2,index2,FWHM2):
-    return gaussian(x,A1,index1,FWHM1)+gaussian(x,A2,index2,FWHM2)
+def bimodal(x, A1,index1,FWHM1, A2,index2,FWHM2, teta, k6, k7):
+    return gaussian(x,A2,index2,FWHM2) + gaussian(x,A1,index1,FWHM1)
 
 #split
 g = fileR.split(' ',-1)
@@ -209,21 +218,22 @@ yy2=np.array(yy2, dtype=float)
 xtotal=np.array(xtotal, dtype=float)
 ytotal=np.array(ytotal, dtype=float)
 
-mod = Model(bimodal) + Model(line)
+#mod = Model(bimodal) + Model(line)
 #plt.plot(bimodal(x=xtotal, A1= area, index1=index_max_y, FWHM1=FWHMyy,A2 = area2, index2= index_max_y2, FWHM2= FWHMyy2))
-pars = mod.make_params(A1= area, index1=index_max_y, FWHM1=FWHMyy,A2 = area2, index2= index_max_y2, FWHM2= FWHMyy2, m=0, b=10)
-pars['FWHM1'].min > 0.001         # sigma  > 0
-pars['FWHM2'].min > 0.001     # amplitude > 0
+#pars = mod.make_params(A1= area, index1=index_max_y, A2 = area2, index2= index_max_y2, FWHM2= FWHMyy2, m=0, b=10)
+#pars['FWHM1'].min > 0.001  # sigma  > 0
+#pars['FWHM2'].min > 0.001
+# amplitude > 0
 
 
-resul = mod.fit(ytotal, pars, x=xtotal, weights=1/np.sqrt(ytotal))
+#resul = mod.fit(ytotal, pars, x=xtotal, weights=1/np.sqrt(ytotal))
 
-print(resul.fit_report())
-t=resul.fit_report().split('\n',-1)
-print (t)
-l = t[7]
-tamanho = len(l)
-valorchi = l[24:tamanho]
+#print(resul.fit_report())
+#t=resul.fit_report().split('\n',-1)
+#print (t)
+#l = t[7]
+#tamanho = len(l)
+#valorchi = l[24:tamanho]
 
 #for w in range (11, 17, 1):
  #   valor =[]
@@ -245,29 +255,29 @@ valorchi = l[24:tamanho]
 #print('aa', apro)
 
 
-plt.plot(xtotal, ytotal,         'b+', label="Experimental")
-plt.plot(xtotal, resul.init_fit, 'k--', color = 'grey' ,label="Initial Fit")
-plt.plot(xtotal, resul.best_fit, 'r-', color = "green",label="Best Fit")
-plt.yscale('log', nonposy='clip')
-plt.ylabel('Intensidade')
-plt.xlabel('Canal')
-plt.figtext(.165, 0.806, r'$\chi$')
-plt.figtext(.18, 0.8, '='+valorchi)
-plt.legend(bbox_to_anchor=(0.8, 1), loc=2, borderaxespad=0.)
+#plt.plot(xtotal, ytotal,         'b+', label="Experimental")
+#plt.plot(xtotal, resul.init_fit, 'k--', color = 'grey' ,label="Initial Fit")
+#plt.plot(xtotal, resul.best_fit, 'r-', color = "green",label="Best Fit")
+#plt.yscale('log', nonposy='clip')
+#plt.ylabel('Intensidade')
+#plt.xlabel('Canal')
+#plt.figtext(.165, 0.806, r'$\chi$')
+#plt.figtext(.18, 0.8, '='+valorchi)
+#plt.legend(bbox_to_anchor=(0.8, 1), loc=2, borderaxespad=0.)
 #plt.show()
 
 # File
 #newfile = input('file name:')
-newfile = '99'
-if os.path.exists(newfile):
-    y = open(newfile, 'a')
-    y.write('\n')
-    y.write("\n".join(map(lambda x: str(x), t[11:17])))
-    y.close()
-else:
-    f = open(newfile, 'w')
-    f.write("\n".join(map(lambda x: str(x), t[11:17])))
-    f.close()
+#newfile = '99'
+#if os.path.exists(newfile):
+#    y = open(newfile, 'a')
+#    y.write('\n')
+#    y.write("\n".join(map(lambda x: str(x), t[11:17])))
+ #   y.close()
+#else:
+#    f = open(newfile, 'w')
+ #   f.write("\n".join(map(lambda x: str(x), t[11:17])))
+  #  f.close()
 
 
 
@@ -301,36 +311,55 @@ print('Novo\n\n\n\n\n')
 
 #-----------------------------------------------------------Relação das Areas
 
-#Opens file
-import pandas as pd
+#Opens file Excel
+
 
 book = openpyxl.load_workbook('LiCl_Logbook.xlsx')
 
 sheet = book.active
 
-
-
+# Valor do angulo
 for i in range(1,100,1):
     loc = sheet.cell(row=i, column=25)
     if loc.value==filename[2:tam-4]:
         print (loc)
         lin = loc.row
         if filename[0:2] == 'F2':
-            ang = sheet.cell(row= lin, column = 25-2)
+            teta = sheet.cell(row= lin, column = 25-2)
         if filename[0:2] == 'F3':
-            ang = sheet.cell(row=lin, column=25 - 1)
-ang = ang.value
+            teta = sheet.cell(row=lin, column=25 - 1)
+teta = teta.value
+print(teta)
 
+#Constantes da expressão
+#ma = 1.660*10**(-27)
+m6 = 6.015121 #"* ma
+m7 = 7.016005 #* ma
+
+
+#Calculo dos k
+k6 = k(m6,teta)
+print(k6)
+k7 = k(m7,teta)
+print(k7)
+#Calculo do w6 inicial
+print(type(FWHMyy2))
+w =w6(m6,m7,teta,FWHMyy2)
+print(w)
+
+
+j = 4
 mod = Model(bimodal) + Model(line)
 
-pars = mod.make_params(A1= area, index1=index_max_y, FWHM1=FWHMyy,A2 = area2, index2= index_max_y2, FWHM2= FWHMyy2, m=0, b=10)
-pars['area'].vary = False
-pars['FWHM1'].min > 0.001         # sigma  > 0
-pars['FWHM2'].min > 0.001     # amplitude > 0
+pars = mod.make_params(A1= area, index1=index_max_y,FWHM1= FWHMyy2, A2 = area2, index2= index_max_y2, FWHM2= FWHMyy2,  teta=teta, k6 = k6, k7 = k7, m=0, b=10)         # sigma  > 0
+pars['k6'].set(vary = False)
+pars['k7'].set(vary = False)
+pars['FWHM1'].set(expr = '(((k6 + cos(teta))/(k7 + cos(teta)))*FWHM2)')
+pars['teta'].set(vary= False)
 
+#pars['FWHM2'].min > 0.001
 
 resul = mod.fit(ytotal, pars, x=xtotal, weights=1/np.sqrt(ytotal))
-
 print(resul.fit_report())
 t=resul.fit_report().split('\n',-1)
 print (t)
@@ -362,3 +391,31 @@ else:
     f = open(newfile, 'w')
     f.write("\n".join(map(lambda x: str(x), t[11:17])))
     f.close()
+
+    # resul = mod.fit(ytotal, pars, x=xtotal, weights=1/np.sqrt(ytotal))
+
+    # print(resul.fit_report())
+    # t=resul.fit_report().split('\n',-1)
+    # print (t)
+    # l = t[7]
+    # tamanho = len(l)
+    # valorchi = l[24:tamanho]
+
+    # for w in range (11, 17, 1):
+    #   valor =[]
+    #  incer = []
+    # val= t[w]
+    # slp=val.split(' ', -1)
+    # print (slp)
+    # num = (map(lambda x: float(x), t[11]))
+    # valor = valor + num
+    # incer = incer + float(val [13])
+    #     print ('dd', valor)
+    #   print(incer)
+    #   #num = float (val)
+    # new = np.append(num)
+    # print (new)
+
+    # apro =np.around(num, decimals=1)
+    # print(type(valorchi))
+    # print('aa', apro)
