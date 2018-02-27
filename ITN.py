@@ -325,41 +325,6 @@ graf(xtotal, ytotal, mod, pars, filename)
 
 grafico(x,y)
 
-min_xx3 = int(input('Lower limit: '))
-max_xx3 = int(input('Upper limit: '))
-
-xx3 = x[min_xx3:max_xx3 + 1]
-yy3 = y[min_xx3:max_xx3 + 1]
-
-inicio3 = min_xx3
-fim3 = max_xx3
-area3 = 0
-p = inicio3
-
-for p in range(inicio3, fim3,1):
-    area3 = (area3 + y[p])
-
-xx3 = np.array(xx3, dtype=float)
-yy3 = np.array(yy3, dtype=float)
-
-inc = np.sqrt(area3)*100/area3
-print(area3)
-fil = 'AreaF3'
-are = open(fil, 'a')
-are.write('\n')
-are.write (filename)
-are.write('\n')
-are.write(str(area3))
-are.write(' ')
-are.write('+/-')
-are.write(' ')
-are.write(str(inc))
-are.write(' ')
-are.close()
-
-
-
-
 anw= input('Guardar? s/n')
 if anw == 's':
     limites = 'limit'
