@@ -143,7 +143,8 @@ plt.plot(SRenergia, SRarea2, 'b+', color = 'blue', label = "Sem Relação 2")
 plt.plot(CRenergia,CRarea1, 'b+',color = 'orange', label = "Com Relação 1")
 plt.plot(CRenergia, CRarea2, 'b+',color = 'black', label = "Com Relação 2")
 plt.ylabel('Area')
-plt.xlabel('Energia')
+plt.xlabel('Energia (keV)')
+plt.legend(bbox_to_anchor=(-0.04, 0.05), loc=1, borderaxespad=0., ncol=1, title="Legenda:", fancybox=True)
 
 plt.subplot(1,3,2)
 plt.plot(SRenergia,SRc1, 'b+', color = 'green', label = "Sem Relação 1" )
@@ -151,16 +152,16 @@ plt.plot(SRenergia, SRc2, 'b+', color = 'blue',label = "Sem Relação 2")
 plt.plot(CRenergia, CRc1, 'b+',color = 'orange', label = "Com Relação 1")
 plt.plot(CRenergia, CRc2, 'b+',color = 'black', label = "Com Relação 2")
 plt.ylabel('Centroide')
-plt.xlabel('Energia')
+plt.xlabel('Energia (keV)')
 
 
 plt.subplot(1,3,3)
-s1 =plt.plot(SRenergia,SRfwhm1,'b+', color = 'green',  label = "Sem Relação 1")
+s1 = plt.plot(SRenergia,SRfwhm1,'b+', color = 'green',  label = "Sem Relação 1")
 s2 = plt.plot(SRenergia, SRfwhm2, 'b+', color = 'blue',label = "Sem Relação 2")
 h1 = plt.plot(CRenergia,CRfwhm1, 'b+',color = 'orange', label = "Com Relação 1")
 h2 = plt.plot(CRenergia, CRfwhm2, 'b+',color = 'black', label = "Com Relação 2")
 plt.ylabel('FWHM')
-plt.xlabel('Energia')
+plt.xlabel('Energia (keV)')
 
 plt.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)
 
@@ -177,7 +178,6 @@ plt.subplots_adjust(top=0.9, left=0.1, right=0.9, bottom=0.12)
 
 
 plt.tight_layout()
-plt.legend(bbox_to_anchor=(0, 0), loc=1, borderaxespad=0., ncol=4, shadow=True, title="Legenda", fancybox=True)
 plt.show()
 
 

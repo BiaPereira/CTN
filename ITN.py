@@ -28,7 +28,7 @@ fileR = file.read()
 def grafico (x,y):
     # legend
     plt.plot(x, y, 'b+',label="Experimental")
-    plt.legend(bbox_to_anchor=(0.8, 1), loc=2, borderaxespad=0.)
+    plt.legend(bbox_to_anchor=(0.8, 1), loc=2, borderaxespad=0., title = 'Legenda:')
     plt.yscale('log', nonposy='clip')
     plt.ylabel('Intensidade')
     plt.xlabel('Canal')
@@ -65,8 +65,7 @@ def line (x, m, b):
     return m*x+b
 
 def bimodal(x,A1,index1,FWHM1,A2,index2,FWHM2,teta, k6, k7):
-    FWHM1 = fabs(FWHM1)
-    FWHM2 = fabs(FWHM2)
+
     return gaussian(x,A1,index1,FWHM1)+ gaussian(x,A2,index2,FWHM2)
 
 def graf(xtotal, ytotal, mod, pars, file):
@@ -82,7 +81,7 @@ def graf(xtotal, ytotal, mod, pars, file):
     plt.yscale('log', nonposy='clip')
     plt.ylabel('Intensidade')
     plt.xlabel('Canal')
-    plt.figtext(.139, 0.800, r'$\frac{\chi^{2}}{NDF}$', fontsize=13)
+    plt.figtext(.165, 0.800, r'$\frac{\chi^{2}}{NDF}$', fontsize=13)
     plt.figtext(.19, 0.8, '=' + valor)
     plt.legend(bbox_to_anchor=(0.8, 1), loc=2, borderaxespad=0.)
     plt.show()
@@ -187,6 +186,7 @@ FWHMyy = max_yy/2 #number of FWHM yy
 #print ('FWHMyy',FWHMyy)
 index_max_yy = yy.index(max_yy)
 index_max_y = index_max_yy + min_xx
+
 #In case that FWHM does not appear in yy
 print(index_max_yy)
 yye=yy[index_max_yy-30:index_max_yy+30]
@@ -205,24 +205,25 @@ else:
     index_FWHM_y = yye.index(number) + min_xx + index_max_yy-30
 print(index_FWHM_y)
 
-max_yy2 = max(yy2)#max_counts
+def fwhm (yy2,min_xx2):
+    max_yy2 = max(yy2)  # max_counts
 
-FWHMyy2 = max_yy2/2 #number of FWHM yy
-index_max_y2 = yy2.index(max_yy2) + min_xx2
-print(FWHMyy2)
-if FWHMyy2 in yy2:
-    index_FWHM_y2 = yy2.index(FWHMyy2) + min_xx2
+    FWHMyy2 = max_yy2 / 2  # number of FWHM yy
+    index_max_y2 = yy2.index(max_yy2) + min_xx2
+    print(FWHMyy2)
+    if FWHMyy2 in yy2:
+        index_FWHM_y2 = yy2.index(FWHMyy2) + min_xx2
 
-else:
-    y2 = sorted(yy2) #order
-    print (y2)
-    index_FWHM_y2 = bisect(y2,FWHMyy2)
-    print ('index_FWHM_y2',index_FWHM_y2)
-    number = y2[index_FWHM_y2]
-    print (number)
-    index_FWHM_y2 = yy2.index(number) + min_xx2
-    print(yy2.index(number))
-
+    else:
+        y2 = sorted(yy2)  # order
+        print(y2)
+        index_FWHM_y2 = bisect(y2, FWHMyy2)
+        print('index_FWHM_y2', index_FWHM_y2)
+        number = y2[index_FWHM_y2]
+        print(number)
+        index_FWHM_y2 = yy2.index(number) + min_xx2
+        print(yy2.index(number))
+    return index_max_y2, index_FWHM_y2
 
 
 
@@ -235,6 +236,9 @@ print(FWHM_xx)
 #print ('FWHM', FWHM_xx)
 FWHM2 = (abs(index_max_y-index_FWHM_y))
 print(FWHM2)
+
+index_max_y2 = fwhm(yy2,min_xx2)[0]
+index_FWHM_y2 = fwhm(yy2,min_xx2)[1]
 FWHM_xx2 = (abs(index_max_y2-index_FWHM_y2)*2)
 print(FWHM_xx2)
 FWHM22 = (abs(index_max_y2-index_FWHM_y2))
@@ -310,7 +314,7 @@ print(k7)
 mod = Model(bimodal) + Model(line)
 
 pars = mod.make_params(A1=area, index1=index_max_y, FWHM1=FWHM_xx, A2=area2, index2=index_max_y2, FWHM2=FWHM_xx2,
-                       teta=teta, k6=k6, k7=k7, m=-5, b=10)         # sigma  > 0
+                       teta=teta, k6=k6, k7=k7, m=-1, b=10)         # sigma  > 0
 pars['k6'].set(vary=False)
 pars['k7'].set(vary=False)
 pars['FWHM1'].set(expr='(((k6 + (1/cos(teta)))/(k7 + (1/cos(teta))))*FWHM2)')
@@ -319,9 +323,46 @@ pars['teta'].set(vary=False)
 
 graf(xtotal, ytotal, mod, pars, filename)
 
+grafico(x,y)
+
+min_xx3 = int(input('Lower limit: '))
+max_xx3 = int(input('Upper limit: '))
+
+xx3 = x[min_xx3:max_xx3 + 1]
+yy3 = y[min_xx3:max_xx3 + 1]
+
+inicio3 = min_xx3
+fim3 = max_xx3
+area3 = 0
+p = inicio3
+
+for p in range(inicio3, fim3,1):
+    area3 = (area3 + y[p])
+
+xx3 = np.array(xx3, dtype=float)
+yy3 = np.array(yy3, dtype=float)
+
+inc = np.sqrt(area3)*100/area3
+print(area3)
+fil = 'AreaF3'
+are = open(fil, 'a')
+are.write('\n')
+are.write (filename)
+are.write('\n')
+are.write(str(area3))
+are.write(' ')
+are.write('+/-')
+are.write(' ')
+are.write(str(inc))
+are.write(' ')
+are.close()
+
+
+
+
 anw= input('Guardar? s/n')
 if anw == 's':
-    limites = 'limites'
+    limites = 'limit'
     lim = open(limites, 'a')
     lim.write('\n')
     lim.write(filename)
@@ -333,6 +374,10 @@ if anw == 's':
     lim.write(str(min_xx2))
     lim.write(' ')
     lim.write(str(max_xx2))
+    lim.write(' ')
+    lim.write(str(min_xx3))
+    lim.write(' ')
+    lim.write(str(max_xx3))
     lim.write(' ')
     lim.write('\n')
     lim.close()
